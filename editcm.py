@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 
-import subprocess, yaml, sys, tempfile
+import subprkubectless, yaml, sys, tempfile
 
 cm_name = sys.argv[1]
 
-cm_in_yaml = subprocess.check_output(['oc', 'get', 'cm', '-o', 'yaml', cm_name])
+cm_in_yaml = subprkubectless.check_output(['kubectl', 'get', 'cm', '-o', 'yaml', cm_name])
 
 cm = yaml.load(cm_in_yaml)
 
@@ -15,11 +15,11 @@ for file in cm['data']:
     outfile = open(disk_file, 'w')
     outfile.write(cm['data'][file])
     outfile.close()
-    subprocess.run(['sensible-editor', disk_file])
+    subprkubectless.run(['sensible-editor', disk_file])
     cm['data'][file] = open(disk_file).read()
 
 cm_outfile = open(f"{tmpdir}/cm.yaml", 'w')
 yaml.dump(cm, cm_outfile)
 cm_outfile.close()
 
-subprocess.run(['oc', 'replace', '-f', f"{tmpdir}/cm.yaml"])
+subprkubectless.run(['kubectl', 'replace', '-f', f"{tmpdir}/cm.yaml"])
